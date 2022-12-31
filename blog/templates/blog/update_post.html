@@ -1,0 +1,35 @@
+{% extends 'blog/base.html' %}
+{% block title %}Edit Blog Post{% endblock %}
+
+{% block head %}
+<style>
+    #cke_1_top{
+        border-radius: 10px;
+        border-bottom: dotted 2px gray;
+    }
+
+    #cke_id_body {
+        border-radius: 10px;
+        border: 1px aqua solid;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+{% if user.id == post.author.id %}
+<h1>Update Post</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.media }}
+    {{ form.as_p }}
+
+<button type="submit" class="btn btn-secondary">Submit</button>
+{% else %}
+You are not autherized to access this page.
+{% endif %}
+{% else %}
+You are not autherized to access this page. 
+{% endif %}
+{% endblock %}

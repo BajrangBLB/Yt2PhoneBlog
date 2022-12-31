@@ -1,0 +1,30 @@
+{% extends 'blog/base.html' %}
+
+{% block title %} Blog - Yt2Phone {% endblock %}
+
+{% block content %}
+
+{% for post in object_list %}
+<li>
+    <b> <a href="{% url 'article_details' post.pk %}"> {{ post.title }} </a> </b>
+    by <small>{{ post.author.first_name }}</small> 
+    - <i>{{ post.pub_date }}</i>
+    - <a href="{% url 'category' post.category|slugify %}">{{ post.category }}</a></br>
+    {{ post.snippets }} <br>
+    <i><small>{{ post.author.email }}</small></i>
+    <br>
+    {% if user.is_authenticated %}
+    {% if user.id == post.author.id %}
+    <small>
+        <a href="{% url 'update_post' post.pk %}">Edit</a>
+    </small> &Tab; 
+    <small>
+        <a href="{% url 'delete_post' post.pk %}">Delete</a>
+    </small>
+    {% endif %}
+    {% endif %}
+    <br><br>
+</li>
+{% endfor %}
+
+{% endblock %}

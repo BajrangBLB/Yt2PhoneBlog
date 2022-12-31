@@ -1,0 +1,20 @@
+{% extends 'blog/base.html' %}
+{% block title %}SetUp Profile{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<h1>SetUp Profile</h1>
+
+<div class="form-grouup">
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.media }}
+    {{ form.as_p }}
+
+<button type="submit" class="btn btn-secondary">Submit</button>
+</div>
+
+{% else %}
+You are not allowed here and you know that :)
+{% endif %}
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% block title %} {{ post.title }} {% endblock %}
+
+{% block head %}
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+  #header_image {
+    width: 100%;
+    height: auto;
+  }
+
+  #author_name {
+    font-family: sans-serif;
+    font-size: large;
+    font-weight: bold;
+  }
+
+  .comments {
+    width: 60%;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<h1> {{ post.title }} </h1>
+<span style="background-color: gray; font-weight:bold">{{ post.category }}</span>
+<br>
+<br>
+
+&nbsp; &nbsp; <span id="author_name">{{ post.author }}</span> &nbsp;&nbsp; {{ post.pub_date }}
+
+{% if user.is_authenticated %}
+{% if user.id == post.author.id %}
+<small>
+  <a href="{% url 'update_post' post.pk %}">Edit</a>
+</small>
+
+&Tab;
+<small>
+  <a href="{% url 'delete_post' post.pk %}">Delete</a>
+</small>
+{% endif %}
+{% endif %}
+<br>
+<hr style="margin: 10px;">
+{% if post.header_image %}
+<img src="{{post.header_image.url}}" alt="{{post.title_tag}}" id="header_image">
+{% endif %}
+<p>{{ post.body|safe }} </p>
+<br><br>
+<a href="{% url 'home' %}"><button type="button" class="btn btn-primary">Back</button></a>
+
+<br><br>
+
+<form action="{% url 'like_post' post.pk %}" method="post">
+  {% csrf_token %}
+
+  {% if user.is_authenticated %}
+
+  {% if liked %}
+  <button type="submit" , name="post_id" , value="{{ post.id }}" class="btn btn-danger btn-sm">Dislike</button>
+  {% else %}
+  <button type="submit" , name="post_id" , value="{{ post.id }}" class="btn btn-primary btn-sm">Like</button>
+  {% endif %}
+  {% else %}
+  <small><a href="{% url 'login' %}">Login</a> to like</small>
+  {% endif %}
+  - {{ total_likes }} Likes
+</form>
+<br>
+
+<div class="card mb-3">
+  <div class="row g-0">
+    <div class="col-md-2">
+      {% if post.author.profile.profile_pic %}
+      <img src="{{ post.author.profile.profile_pic.url }}" class="img-fluid rounded-start"
+        alt="{{post.author.username}}" width="200px" height="200px">
+      {% else %}
+      <img src="{% static 'blog/images/default_profile.png' %}" class="img-fluid rounded-start"
+        alt="{{post.author.username}}" width="200px" height="200px">
+      {% endif %}
+    </div>
+    <div class="col-md-10">
+      <div class="card-body">
+        <h5 class="card-title">{{post.author.first_name}} {{post.author.last_name}}</h5>
+        <p class="small text-muted">
+          {% if post.author.profile.facebook_url %}
+          <a href="{{post.author.profile.facebook_url}}">Facebook</a>
+          | {% endif %}
+          {% if post.author.profile.twitter_url %}
+          <a href="{{post.author.profile.twitter_url}}">Twitter</a> | {% endif %}
+          {% if post.author.profile.instagram_url %}
+          <a href="{{post.author.profile.instagram_url}}">Instagram</a> | {% endif %}
+          {% if post.author.profile.pinterest_url %}
+          <a href="{{post.author.profile.pinterest_url}}">Pinterest</a> {% endif %}
+        </p>
+        <p class="card-text">{{post.author.profile.bio}}</p>
+
+        <a href="{% url 'profile' post.author.profile.id %}"><button type="button" class="btn btn-primary">Visit
+            Profile</button></a>
+      </div>
+    </div>
+  </div>
+</div>
+<br>
+<br>
+
+<h3>Add Comment</h3>
+<div style="width: 50%;">
+  {% if not user.is_authenticated %}
+  <form action="{% url 'post_comment' post.pk %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" value="{{ post.id }}" name="post_id">
+    <div class="mb-3">
+      <input type="text" class="form-control" id="exampleFormControlName" placeholder="Name" name="comment_name">
+    </div>
+    <div class="mb-3">
+      <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Email" name="comment_email">
+    </div>
+    <div class="mb-3">
+      <textarea class="form-control" id="exampleFormControlTextarea1" name="comment_body"
+        placeholder="Comment Body"></textarea>
+    </div>
+    <input type="submit" value="Comment" class="btn btn-primary">
+  </form>
+  {% else %}
+  <form action="{% url 'post_comment' post.pk %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" value="{{ post.id }}" name="post_id">
+    <div class="mb-3">
+      <textarea class="form-control" id="exampleFormControlTextarea1" name="comment_body"></textarea>
+    </div>
+    <input type="submit" value="Comment" class="btn btn-primary">
+  </form>
+  {% endif %}
+</div>
+
+<br>
+<div class="comments">
+  <h2>Comments</h2>
+  {% if not post.comments.all %}
+  No Comments yet...
+  {% else %}
+  {% for comment in post.comments.all %}
+  <strong>
+    {{ comment.name }} - {{ comment.date_added }}
+  </strong>
+  <br>
+  {{ comment.body }}
+  <br><br>
+  <hr>
+  {% endfor %}
+  {% endif %}
+</div>
+<br><br>
+{% endblock %}

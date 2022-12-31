@@ -1,0 +1,34 @@
+{% extends 'blog/base.html' %}
+
+{% block title %} {{ category }} - Yt2Phone {% endblock %}
+
+{% block content %}
+
+{% if category_posts %}
+{% for post in category_posts %}
+<li>
+    <b> <a href="{% url 'article_details' post.pk %}"> {{ post.title }} </a> </b>
+    by <small>{{ post.author }}</small> 
+    - <i>{{ post.pub_date }}</i>
+    - {{ post.category }}</br>
+    {{ post.body|slice:":200"|safe }} <br>
+    <i><small>{{ post.author.email }}</small></i>
+    <br>
+    {% if user.is_authenticated %}
+    {% if user.id == post.author.id %}
+    <small>
+        <a href="{% url 'update_post' post.pk %}">Edit</a>
+    </small> &Tab; 
+    <small>
+        <a href="{% url 'delete_post' post.pk %}">Delete</a>
+    </small>
+    {% endif %}
+    {% endif %}
+    <br><br>
+</li>
+{% endfor %}
+{% else %}
+Sorry this page does not exists....
+{% endif %}
+
+{% endblock %}

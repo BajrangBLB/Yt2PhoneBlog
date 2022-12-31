@@ -1,0 +1,16 @@
+{% extends 'blog/base.html' %}
+{% block title %}Create Blog Category{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<h1>Add New Category</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+<button type="submit" class="btn btn-secondary">Submit</button>
+{% else %}
+You are not allowed here and you know that :)
+{% endif %}
+{% endblock %}

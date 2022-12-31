@@ -1,0 +1,22 @@
+{% extends 'blog/base.html' %}
+{% block title %}Update Profile{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+    {% if user.id == profile.user.id %}
+<h1>Edit Profile</h1>
+
+<div class="form-grouup">
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+<button type="submit" class="btn btn-secondary">Submit</button>
+</div>
+{% else %}
+Bad Request
+{% endif %}
+{% else %}
+You are not allowed here and you know that :)
+{% endif %}
+{% endblock %}
